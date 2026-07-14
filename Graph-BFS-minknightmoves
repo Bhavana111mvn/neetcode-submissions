@@ -1,0 +1,63 @@
+https://leetcode.com/problems/minimum-knight-moves/
+
+
+In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
+
+A knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
+
+
+Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
+
+ 
+
+Example 1:
+
+Input: x = 2, y = 1
+Output: 1
+Explanation: [0, 0] → [2, 1]
+Example 2:
+
+Input: x = 5, y = 5
+Output: 4
+Explanation: [0, 0] → [2, 1] → [4, 2] → [3, 4] → [5, 5]
+ 
+
+Constraints:
+
+-300 <= x, y <= 300
+0 <= |x| + |y| <= 300
+
+
+func minKnightMoves(x int, y int) int {
+    mat := [][]int{
+        {1, 2},{-1,-2},{-2,1},{-2,-1},{-1,2},{1,-2},{2,-1},{2,1},
+    }    
+    tmp:=[2]int{0,0}
+    queue := make([][2]int, 0)
+    queue = append(queue,tmp)
+    visited := make(map[[2]int]bool)
+    visited[tmp] = true
+    level :=0
+    if visited[[2]int{x,y}] == true {
+            return level
+    }
+    for len(queue)!=0 {
+        size := len(queue)
+        for i:=0;i<size;i++ {
+            val := queue[0]
+            queue = queue[1:]
+            for _, nbr := range mat {
+                tmp := [2]int{val[0]+nbr[0],val[1]+nbr[1]}
+                if!visited[tmp] {
+                    visited[tmp] = true
+                    queue = append(queue, tmp)
+                }
+            }
+        }
+        level++
+        if visited[[2]int{x,y}] == true {
+            return level
+        }
+    }
+    return level
+}
