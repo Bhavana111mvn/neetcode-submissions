@@ -1,0 +1,65 @@
+https://leetcode.com/problems/course-schedule-ii/
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return the ordering of courses you should take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.
+
+ 
+
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: [0,1]
+Explanation: There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].
+
+func findOrder(numCourses int, prerequisites [][]int) []int {
+    adjlst := make(map[int][]int)
+    finalres := make([]int,0)
+    if len(prerequisites) == 0 {
+       for ind:=0; ind<numCourses;ind++ {
+          finalres= append(finalres, ind)
+       }
+       return finalres
+    }
+    for _, preq := range prerequisites {
+        if len(adjlst[preq[1]]) !=0 {
+            adjlst[preq[1]] = append(adjlst[preq[1]], preq[0])
+        } else {
+            adjlst[preq[1]] =[]int{preq[0]}
+        }
+    }
+    state := make([]int,numCourses)
+    stack := make([]int,0)
+    ok := false
+    for i:=0; i<numCourses;i++ {
+        if state[i] == 0 {
+           stack, ok= dfs(i,adjlst,state,stack)
+        }
+        if !ok {
+            return []int{} // cycle found, no valid order
+        }
+    }
+    for ind:=len(stack)-1; ind >=0; ind-- {
+        finalres = append(finalres, stack[ind])
+    }
+    return finalres
+}
+
+func dfs(i int, adjlst map[int][]int, state []int, stack []int)([]int,bool) {
+    state[i]=1
+    for _, nbr := range adjlst[i] {
+         if state[nbr]==1 {
+            return stack, false
+         }
+         if state[nbr] == 0  {
+            ok := false
+            stack,ok = dfs(nbr, adjlst,state,stack)
+            if !ok {
+                return stack, false// propagate the cycle finding upward
+            }
+         }
+    }
+    state[i]=2
+    stack = append(stack, i)
+    return stack, true
+}
