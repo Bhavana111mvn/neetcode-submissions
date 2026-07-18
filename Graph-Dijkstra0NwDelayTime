@@ -1,0 +1,82 @@
+https://leetcode.com/problems/network-delay-time/
+
+You are given a network of n nodes, labeled from 1 to n. You are also given times, a list of travel times as directed edges times[i] = (ui, vi, wi), where ui is the source node, vi is the target node, and wi is the time it takes for a signal to travel from source to target.
+
+We will send a signal from a given node k. Return the minimum time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.
+
+
+type Edge struct {
+    to     int
+    weight int
+}
+
+func networkDelayTime(times [][]int, n int, k int) int {
+    graph:= make(map[int][]Edge)
+    for _, time := range times {
+        e := Edge{to:time[1], weight:time[2]}
+        if len(graph[time[0]]) !=0 {
+           graph[time[0]]=append(graph[time[0]],e)
+        } else {
+            graph[time[0]]=[]Edge{e}
+        }
+    }
+   res := dijkstra(n,graph,k)
+   maxim := 0
+   for _, val :=  range res {
+       maxim = max(maxim,val)
+   }
+   if maxim == math.MaxInt64 {
+     return -1
+   }
+   return maxim
+}
+
+
+
+
+type State struct {
+    node, dist int
+}
+
+type PQ []State
+
+func (pq PQ) Len() int            { return len(pq) }
+func (pq PQ) Less(i, j int) bool  { return pq[i].dist < pq[j].dist }
+func (pq PQ) Swap(i, j int)       { pq[i], pq[j] = pq[j], pq[i] }
+func (pq *PQ) Push(x any)         { *pq = append(*pq, x.(State)) }
+func (pq *PQ) Pop() any {
+    old := *pq
+    n := len(old)
+    item := old[n-1]
+    *pq = old[:n-1]
+    return item
+}
+
+func dijkstra(n int, graph map[int][]Edge, src int) []int {
+    dist := make([]int, n+1)
+    for i := range dist {
+        dist[i] = math.MaxInt64
+    }
+    dist[0]=0
+    dist[src] = 0
+
+    pq := &PQ{{node: src, dist: 0}}
+    heap.Init(pq)
+
+    for pq.Len() > 0 {
+        cur := heap.Pop(pq).(State)
+
+        if cur.dist > dist[cur.node] {
+            continue // stale entry, skip
+        }
+
+        for _, e := range graph[cur.node] {
+            nd := cur.dist + e.weight
+            if nd < dist[e.to] {
+                dist[e.to] = nd
+                heap.Push(pq, State{node: e.to, dist: nd})
+            }
+        }
+    }
+    return dist
+}
