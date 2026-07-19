@@ -1,0 +1,44 @@
+https://leetcode.com/problems/number-of-provinces/description/
+
+There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, and city b is connected directly with city c, then city a is connected indirectly with city c.
+
+A province is a group of directly or indirectly connected cities and no other cities outside of the group.
+
+You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith city and the jth city are directly connected, and isConnected[i][j] = 0 otherwise.
+
+Return the total number of provinces.
+
+
+
+func findCircleNum(isConnected [][]int) int {
+    parents := make([]int, len(isConnected))
+    components := len(isConnected)
+    for i:= range parents {
+        parents[i] = i
+    }
+    for i, connection := range isConnected {
+        for j:= range connection {
+           if j!=i && isConnected[i][j] == 1 {
+             components = Union(i,j,components,parents)
+           }
+        }
+    }
+    return components
+    
+}
+
+func Union(i,j, components int, parents []int) int {
+    if findParent(i,parents) != findParent(j,parents) {
+        parents[findParent(j,parents)] = findParent(i,parents)
+        components = components-1
+    }
+    return components
+}
+
+func findParent(i int, parents []int)int {
+    if i==parents[i] {
+        return i
+    }
+    parents[i] = findParent(parents[i],parents)
+    return parents[i]
+}
