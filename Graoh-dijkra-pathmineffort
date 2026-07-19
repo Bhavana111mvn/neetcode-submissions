@@ -1,0 +1,75 @@
+https://leetcode.com/problems/path-with-minimum-effort/
+You are a hiker preparing for an upcoming hike. You are given heights, a 2D array of size rows x columns, where heights[row][col] represents the height of cell (row, col). You are situated in the top-left cell, (0, 0), and you hope to travel to the bottom-right cell, (rows-1, columns-1) (i.e., 0-indexed). You can move up, down, left, or right, and you wish to find a route that requires the minimum effort.
+
+A route's effort is the maximum absolute difference in heights between two consecutive cells of the route.
+
+Return the minimum effort required to travel from the top-left cell to the bottom-right cell.
+
+
+
+type Edge struct {
+    vertex [2]int
+    cost int
+}
+func minimumEffortPath(heights [][]int) int {
+    res := dijkstra(heights)
+    return res[len(heights)-1][len(heights[0])-1]
+}
+
+type MaxHeap []Edge
+
+func (h MaxHeap)Len() int {
+    return len(h)
+}
+func(h MaxHeap)Swap(i, j int) {
+    h[i],h[j]=h[j],h[i]
+}
+func(h MaxHeap)Less(i, j int)bool {
+    return h[i].cost <h[j].cost
+}
+func(h *MaxHeap)Push(x any) {
+    *h = append(*h,x.(Edge))
+}
+func (h *MaxHeap) Pop() any {
+    old := *h
+    n := len(old)
+    item := old[n-1]
+    *h = old[:n-1]
+    return item
+}
+
+func diff(a, b int) int {
+    if a > b{
+        return a-b
+    }
+    return b-a
+}
+
+func dijkstra(heights [][]int) [][]int {
+    results := make([][]int,len(heights))
+    for i:= range results {
+        results[i]=make([]int, len(heights[0]))
+        for j:= range results[i] {
+            results[i][j]=int(1e9)
+        }
+    }
+    h :=&MaxHeap{{vertex:[2]int{0,0},cost:0}}
+    nbrlst := [][2]int{{-1,0},{1,0},{0,-1},{0,1}}
+    heap.Init(h)
+    for h.Len() >0 {
+        pop := heap.Pop(h).(Edge)
+        for _, nbr:= range nbrlst {
+            if pop.vertex[0]+nbr[0] >= 0 && pop.vertex[0]+nbr[0] <len(heights) && pop.vertex[1]+nbr[1] >= 0 && pop.vertex[1]+nbr[1] <len(heights[0]) {
+                diff := diff(heights[pop.vertex[0]][pop.vertex[1]], heights[pop.vertex[0]+nbr[0]][pop.vertex[1]+nbr[1]])
+                newCost := max(pop.cost, diff)
+                if newCost < results[pop.vertex[0]+nbr[0]][pop.vertex[1]+nbr[1]] {
+                    edge := Edge{vertex:[2]int{pop.vertex[0]+nbr[0],pop.vertex[1]+nbr[1]},cost: newCost}
+                    results[pop.vertex[0]+nbr[0]][pop.vertex[1]+nbr[1]] = newCost
+                    heap.Push(h, edge)
+                }
+            }
+        }
+    }
+    return results
+
+}
