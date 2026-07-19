@@ -1,0 +1,44 @@
+
+https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/description/
+On a 2D plane, we place n stones at some integer coordinate points. Each coordinate point may have at most one stone.
+
+A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.
+
+Given an array stones of length n where stones[i] = [xi, yi] represents the location of the ith stone, return the largest possible number of stones that can be removed.
+
+
+
+func removeStones(stones [][]int) int {
+    parents := make([]int, len(stones))
+    for i:= range parents {
+        parents[i]=i // each stone is parent to itself
+    }
+    components := len(stones)
+    for i:=0; i<len(stones);i++ {
+        for j:=i+1; j<len(stones);j++ {
+            if stones[j][0]==stones[i][0] || stones[j][1]==stones[i][1] {
+                components = Union(i,j,components,parents)
+            }
+        }
+    }
+    return len(stones)-components
+}
+
+
+func Union(i,j,components int, parents []int) int {
+    if findParent(i,parents) != findParent(j,parents) {
+        parents[findParent(j,parents)] = findParent(i,parents)
+        components = components-1
+    }
+    return components
+}
+
+
+
+func findParent(i int, parents []int)int {
+    if i==parents[i] {
+        return i
+    }
+    parents[i]= findParent(parents[i],parents)
+    return parents[i]
+}
