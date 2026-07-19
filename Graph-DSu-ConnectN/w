@@ -1,0 +1,43 @@
+https://leetcode.com/problems/number-of-operations-to-make-network-connected/description/
+
+
+There are n computers numbered from 0 to n - 1 connected by ethernet cables connections forming a network where connections[i] = [ai, bi] represents a connection between computers ai and bi. Any computer can reach any other computer directly or indirectly through the network.
+
+You are given an initial computer network connections. You can extract certain cables between two directly connected computers, and place them between any pair of disconnected computers to make them directly connected.
+
+Return the minimum number of times you need to do this in order to make all the computers connected. If it is not possible, return -1.
+
+
+
+func makeConnected(n int, connections [][]int) int {
+    if len(connections) < n-1 {
+        return -1 /// because n-1 edges are needed to connect n vertices
+    }
+    components := n /// no of components assuming graph is not connected at all
+    parents := make([]int, n) // parents vector
+    for i:= range parents {
+        parents[i]=i /// initial every vertex is parent to itself assuming graph is not connected
+    }
+    for _, connection := range connections {
+        vertex1, vertex2 := connection[0], connection[1]
+        components = Union(vertex1, vertex2,components,parents)
+    }
+    return components-1
+}
+
+func Union(i, j, components int, parents []int)int {
+    if findParent(i, parents) != findParent(j, parents) {
+        parents[findParent(j, parents)]=parents[findParent(i, parents)]
+        components = components-1
+    } 
+    return components
+} 
+
+
+func findParent(ind int, parents []int) int {
+    if ind == parents[ind] {
+       return ind
+    }
+    parents[ind] = findParent(parents[ind], parents)
+    return parents[ind] 
+}
