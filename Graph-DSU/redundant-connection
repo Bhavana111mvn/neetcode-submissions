@@ -1,0 +1,44 @@
+https://leetcode.com/problems/redundant-connection/description/
+
+
+In this problem, a tree is an undirected graph that is connected and has no cycles.
+
+You are given a graph that started as a tree with n nodes labeled from 1 to n, with one additional edge added. The added edge has two different vertices chosen from 1 to n, and was not an edge that already existed. The graph is represented as an array edges of length n where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the graph.
+
+Return an edge that can be removed so that the resulting graph is a tree of n nodes. If there are multiple answers, return the answer that occurs last in the input.
+
+func findRedundantConnection(edges [][]int) []int {
+    parents := make([]int, len(edges)+1)
+    for i:= range parents {
+        parents[i]=i
+    }
+    stack := make([][]int, 0)
+    for _, edge := range edges  {
+        tmpedge := Union(edge[0],edge[1],parents)
+        if len(tmpedge)!=0 {
+            stack = append(stack, tmpedge)
+        }
+    }
+    return stack[len(stack)-1]
+}
+
+
+
+func Union(i,j int, parents []int) []int {
+    stack := []int{}
+    if findParent(i,parents) !=findParent(j,parents) {
+        parents[findParent(j,parents)] = findParent(i,parents)
+    } else {
+        stack =[]int{i,j}
+    }
+    return stack
+}
+
+
+func findParent(i int,parents []int)int {
+    if i==parents[i] {
+        return i
+    }
+    parents[i]=findParent(parents[i],parents)
+    return parents[i]
+}
