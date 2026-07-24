@@ -1,0 +1,49 @@
+https://leetcode.com/problems/unique-paths-iii/
+
+You are given an m x n integer array grid where grid[i][j] could be:
+
+1 representing the starting square. There is exactly one starting square.
+2 representing the ending square. There is exactly one ending square.
+0 representing empty squares we can walk over.
+-1 representing obstacles that we cannot walk over.
+Return the number of 4-directional walks from the starting square to the ending square, that walk over every non-obstacle square exactly once.
+
+
+func uniquePathsIII(grid [][]int) int {
+    start_row, start_col :=0,0
+    nonobstacles := 0
+    for m:= 0; m<len(grid);m++ {
+        for n:=0; n<len(grid[0]); n++ {
+            if grid[m][n] ==1 {
+                start_row, start_col = m,n
+            } else if grid[m][n] == 0 {
+                nonobstacles++
+            }
+        }
+    }
+    nonobstacles+=1
+    return dfs(start_row, start_col,grid,0, nonobstacles)
+    
+}
+
+func dfs(i,j int,grid[][]int, cnt int, noobscnt int) int {
+    if i<0 || i==len(grid) || j<0 || j==len(grid[0]) || grid[i][j] == -1 {
+        return 0
+    }
+    if grid[i][j] ==2 {
+        if cnt == noobscnt {
+            return 1
+        } else {
+            return 0
+        }
+    }
+    curr := grid[i][j]
+    sum :=0
+    grid[i][j] = -1
+    sum += dfs(i-1,j,grid, cnt+1,noobscnt)
+    sum += dfs(i+1,j,grid, cnt+1,noobscnt)
+    sum += dfs(i,j-1,grid, cnt+1,noobscnt)
+    sum += dfs(i,j+1,grid, cnt+1,noobscnt)
+    grid[i][j]=curr
+    return sum
+}
