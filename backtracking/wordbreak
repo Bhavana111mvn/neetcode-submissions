@@ -1,0 +1,29 @@
+https://leetcode.com/problems/word-break/description/
+
+Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note that the same word in the dictionary may be reused multiple times in the segmentation.
+
+
+func wordBreak(s string, wordDict []string) bool {
+    memo := make(map[int]bool)
+    return recurs(0, s, wordDict, memo)
+}
+
+func recurs(start int, s string, wordDict []string, memo map[int]bool)bool {
+    if start >= len(s) {
+        return true
+    }
+    if _, ok:= memo[start];ok {
+        return memo[start]
+    }
+    res := false
+    for i:=0; i<len(wordDict);i++ {
+        window := len(wordDict[i])
+        if start+window <= len(s) && s[start:start+window] == wordDict[i] {
+            res = res || recurs(start+window, s, wordDict,memo)
+        }
+    }
+    memo[start]=res
+    return res
+}
