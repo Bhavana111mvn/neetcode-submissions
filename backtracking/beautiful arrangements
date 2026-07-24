@@ -1,0 +1,33 @@
+https://leetcode.com/problems/beautiful-arrangement/description/
+
+Suppose you have n integers labeled 1 through n. A permutation of those n integers perm (1-indexed) is considered a beautiful arrangement if for every i (1 <= i <= n), either of the following is true:
+
+perm[i] is divisible by i.
+i is divisible by perm[i].
+Given an integer n, return the number of the beautiful arrangements that you can construct.
+func countArrangement(n int) int {
+    temp:= make([]int,0)
+    res:= 0
+    visited:= make([]bool,n+1)
+    recurs(1,n,temp,&res, visited)
+    return res
+    
+}
+
+func recurs(i int, n int, temp []int, res *int, visited []bool)  {  
+    if len(temp)==n {
+        *res = *res+1
+        return
+    }
+    for i:=1; i<=n;i++ {
+        if !visited[i] {
+            if i%(len(temp)+1) == 0 || (len(temp)+1)%i ==0 {
+                visited[i] = true
+                temp = append(temp,i)
+                recurs(i+1,n,temp,res,visited)
+                temp = temp[:len(temp)-1]
+                visited[i] = false
+            }
+        }
+    }
+}
