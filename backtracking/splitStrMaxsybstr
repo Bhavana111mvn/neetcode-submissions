@@ -1,0 +1,33 @@
+https://leetcode.com/problems/split-a-string-into-the-max-number-of-unique-substrings/description/
+Given a string s, return the maximum number of unique substrings that the given string can be split into.
+
+You can split string s into any list of non-empty substrings, where the concatenation of the substrings forms the original string. However, you must split the substrings such that all of them are unique.
+
+A substring is a contiguous sequence of characters within a string.
+
+func maxUniqueSplit(s string) int {
+    charmap := make(map[string]bool)
+    temp := make([]string,0)
+    res := recurs(0,s,temp,charmap)
+    return res
+    
+}
+
+
+func recurs(i int, s string, temp []string, charmap map[string]bool) int  {
+    if i==len(s) {
+        return len(temp)
+    }
+    res := 0
+    for j:=i; j<len(s);j++ {
+        curr := s[i:j+1]
+        if !charmap[curr] {
+            charmap[curr] = true
+            temp = append(temp, curr)
+            res = max(recurs(j+1, s, temp, charmap),res)
+            temp = temp[:len(temp)-1]
+            charmap[curr] = false
+        }
+    }
+    return res
+}
