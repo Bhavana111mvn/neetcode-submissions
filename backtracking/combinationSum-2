@@ -1,0 +1,45 @@
+https://leetcode.com/problems/combination-sum-ii/description/
+Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+
+Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+
+
+
+func combinationSum2(candidates []int, target int) [][]int {
+    res := make([][]int,0)
+    temp := make([]int,0)
+    sort.Ints(candidates)
+    recurs(0, 0,target,candidates,&res,temp)
+    return res
+}
+
+func recurs(i int, sum int, target int, candidates []int, res *[][]int, temp []int)  {
+    if i==len(candidates) {
+        if sum == target {
+            subset := make([]int,len(temp))
+            copy(subset,temp)
+            *res = append(*res,subset)
+        
+        }
+        return
+    }
+    if sum == target {
+        subset := make([]int,len(temp))
+        copy(subset,temp)
+        *res = append(*res,subset)
+        return
+    }
+    for j:=i;j<len(candidates);j++ {
+        if  sum + candidates[j] <= target {
+            if j>i &&  candidates[j] == candidates[j-1]{
+                continue
+            }
+            temp = append(temp, candidates[j])
+            recurs(j+1, sum + candidates[j],target, candidates, res, temp)
+            temp= temp[:len(temp)-1]
+            
+        }
+    }
+}
