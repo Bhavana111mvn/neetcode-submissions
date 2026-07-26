@@ -1,0 +1,49 @@
+https://leetcode.com/problems/longest-common-subsequence/description/
+Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
+
+A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.
+
+For example, "ace" is a subsequence of "abcde".
+A common subsequence of two strings is a subsequence that is common to both strings.
+
+
+
+func longestCommonSubsequence(text1 string, text2 string) int {
+    //memo := make(map[[2]int]int)
+    dp := make([][]int, len(text1)+1)
+    for i:= range dp {
+        dp[i] = make([]int, len(text2)+1)
+    }
+    dp[0][0] = 0 // lcs with text1 of length 0 and text2 of length 0 is 0
+    for m :=1; m<len(dp);m++ {
+        for n:=1;n<len(dp[0]);n++ {
+            res :=0
+            if text1[m-1] == text2[n-1] {
+                res = 1+dp[m-1][n-1]
+            } else {
+                res = max(dp[m-1][n], dp[m][n-1])
+            }
+            dp[m][n]=res
+        }
+    }
+    return dp[len(text1)][len(text2)]
+    //recurs(len(text1),len(text2), text1,text2,memo)
+}
+
+func recurs(m,n int, text1,text2 string, memo map[[2]int]int) int {
+    if m==0 || n==0 {
+        return 0
+    }
+    res := 0
+    key := [2]int{m,n}
+    if _,ok:=memo[key];ok {
+        return memo[key]
+    }
+    if text1[m-1] == text2[n-1] {
+        res = 1+recurs(m-1,n-1,text1, text2,memo)
+    } else {
+        res = max(recurs(m-1,n,text1, text2,memo), recurs(m,n-1,text1, text2,memo))
+    }
+    memo[key]=res
+    return res
+}
