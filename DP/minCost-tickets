@@ -1,0 +1,59 @@
+https://leetcode.com/problems/minimum-cost-for-tickets/description/
+
+You have planned some train traveling one year in advance. The days of the year in which you will travel are given as an integer array days. Each day is an integer from 1 to 365.
+
+Train tickets are sold in three different ways:
+
+a 1-day pass is sold for costs[0] dollars,
+a 7-day pass is sold for costs[1] dollars, and
+a 30-day pass is sold for costs[2] dollars.
+The passes allow that many days of consecutive travel.
+
+For example, if we get a 7-day pass on day 2, then we can travel for 7 days: 2, 3, 4, 5, 6, 7, and 8.
+Return the minimum number of dollars you need to travel every day in the given list of days.
+
+
+func mincostTickets(days []int, costs []int) int {
+    daymap := make(map[int]bool)
+    for _, day:= range days {
+        daymap[day] = true
+    }
+    dp := make([]int, days[len(days)-1]+1)
+    dp[0]=0 /// min cost to reach day 0
+    for i:=1; i<len(dp);i++ {
+        if !daymap[i] {
+            dp[i]=dp[i-1]
+           continue
+        }
+        day1,day7, day30 := costs[0]+dp[i-1], costs[1]+dp[max(i-7,0)],costs[2]+dp[max(i-30,0)]     
+        dp[i] = min(day1,day7,day30)
+    }
+    return dp[len(dp)-1]
+}
+
+func recurs(ind int, days []int, costs[]int, validity int, memo map[[2]int]int) int {
+    if ind==len(days) {
+        return 0
+    }
+    one, seven, thirty:= int(1e9), int(1e9), int(1e9)
+    key := [2]int{ind, validity}
+    if _,ok := memo[key]; ok {
+        return memo[key]
+    }
+    if validity >=days[ind] {
+        return  recurs(ind+1, days, costs, validity,memo)
+    } else {
+       one = costs[0]+recurs(ind+1, days, costs, 0,memo)
+       m:= ind
+       for (m <len(days) && days[m]<days[ind]+6) {
+          m++
+       }
+       seven = costs[1]+recurs(m, days, costs, days[ind]+6,memo)
+       for m <len(days) &&  days[m] <days[ind]+29 {
+          m++
+       }
+       thirty = costs[2]+recurs(m, days, costs, days[ind]+29,memo)
+    }
+    memo[key]=min(one,seven,thirty)
+    return min(one,seven,thirty)
+}
