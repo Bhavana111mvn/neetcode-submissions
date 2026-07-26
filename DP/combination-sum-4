@@ -1,0 +1,41 @@
+https://leetcode.com/problems/combination-sum-iv/description/
+
+Given an array of distinct integers nums and a target integer target, return the number of possible combinations that add up to target.
+
+The test cases are generated so that the answer can fit in a 32-bit integer.
+func combinationSum4(nums []int, target int) int {
+    dp := make([]int, target+1) //
+    dp[0]=1
+    
+    for sum := 1; sum <= target; sum++ {
+        for _, num := range nums {
+            if sum >= num {
+                dp[sum] += dp[sum-num]
+            }
+        }
+    }
+    fmt.Println(dp)
+    return 1
+}
+
+func recurs(nums []int, target int, memo []int) int{
+    if  target < 0 {
+        return 0
+    }
+    if target==0{
+        return 1
+    }
+    if memo[target] !=-1{
+        return memo[target]
+    }
+    res := 0
+    for j:=0; j<len(nums);j++ {
+        if nums[j] <=target {
+            res += recurs(nums, target-nums[j],memo)
+        } else {
+            continue
+        }
+    }
+    memo[target]=res
+    return res
+}
