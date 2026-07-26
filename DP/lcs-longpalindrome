@@ -1,0 +1,33 @@
+https://leetcode.com/problems/longest-palindromic-subsequence/description/
+Given a string s, find the longest palindromic subsequence's length in s.
+
+A subsequence is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.
+
+func longestPalindromeSubseq(s string) int {
+    res := reverse(s)
+    memo := make(map[[2]int]int)
+    return findlcs(len(s),len(res),s,res,memo)
+}
+
+func reverse(s string)string {
+    res := make([]byte, len(s))
+    for i:=0; i<len(s);i++ {
+        res[i] = s[len(s)-1-i]
+    } 
+    return string(res)
+}
+
+func findlcs(i,j int, s, rev string, memo map[[2]int]int) int {
+    if i==0 || j==0 {
+        return 0
+    }
+    key := [2]int{i,j}
+    if _,ok:= memo[key];ok {
+        return memo[key]
+    }
+    if s[i-1]==rev[j-1] {
+        return 1+findlcs(i-1,j-1,s,rev,memo)
+    } 
+    memo[key] = max(findlcs(i-1,j,s,rev,memo),findlcs(i,j-1,s,rev,memo))
+    return memo[key]
+}
