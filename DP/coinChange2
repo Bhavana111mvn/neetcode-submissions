@@ -1,0 +1,30 @@
+https://leetcode.com/problems/coin-change-ii/description/
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the number of combinations that make up that amount. If that amount of money cannot be made up by any combination of the coins, return 0.
+
+You may assume that you have an infinite number of each kind of coin.
+
+The final answer is guaranteed to fit into a signed 32-bit intege
+
+
+func change(amount int, coins []int) int {
+    dp := make([][]int,len(coins)+1)
+    for i:= range dp {
+        dp[i] = make([]int, amount+1)
+    }
+    for i:=0; i<len(dp);i++ {
+        dp[i][0] =1
+    }
+    for m:=1; m< len(dp);m++ {
+        for n:=1;n<len(dp[0]);n++ {
+            if coins[m-1] <=n {
+                dp[m][n] =dp[m][n-coins[m-1]] +dp[m-1][n]
+            } else {
+                dp[m][n] =dp[m-1][n]
+            }
+        }
+    }
+    return dp[len(dp)-1][len(dp[0])-1]
+    
+}
