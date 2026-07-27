@@ -1,0 +1,52 @@
+https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/description/
+
+You have n dice, and each dice has k faces numbered from 1 to k.
+
+Given three integers n, k, and target, return the number of possible ways (out of the kn total ways) to roll the dice, so the sum of the face-up numbers equals target. Since the answer may be too large, return it modulo 109 + 7.
+
+
+func numRollsToTarget(n int, k int, target int) int {
+    dp :=make([]int,target+1) 
+    dp[0] = 1
+    for i:=1; i<=n;i++ {
+        tmp := make([]int,target+1)
+        for sum:=1; sum<=target; sum++ {
+            res := 0
+            for m:=1; m<=k;m++ {
+               if sum >= m {
+                  res= (res+dp[sum-m])%MOD
+               }
+            }
+            tmp[sum] = res        
+        }
+        dp = tmp
+
+    }
+    //fmt.Println(dp)
+    return dp[len(dp)-1]
+    //memo := make(map[[2]int]int)
+    //return recurs(n,k,target,memo)
+}
+const MOD = 1000000007
+func recurs(n int, k int, target int,memo map[[2]int]int) int {
+    if n==0 && target == 0 {
+        return 1
+    } 
+    if n==0 || target < 0 {
+        return 0
+    }
+    key := [2]int{n,target}
+    if _,ok:= memo[key]; ok {
+        return memo[key]
+    }
+    res := 0
+    for i:=1; i<=k;i++ {
+        if target >=i {
+           res = (res+recurs(n-1, k, target-i,memo))%MOD
+        } else {
+            continue
+        }
+    }
+    memo[key]= res
+    return res
+}
