@@ -1,0 +1,31 @@
+https://leetcode.com/problems/is-subsequence/description/
+
+Given two strings s and t, return true if s is a subsequence of t, or false otherwise.
+
+A subsequence of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (i.e., "ace" is a subsequence of "abcde" while "aec" is not).
+
+
+
+func isSubsequence(s string, t string) bool {
+    lcs := findLcs(len(s),len(t),s,t, "")
+    if lcs==s {
+        return true
+    }
+    return false
+}
+
+
+func findLcs(n, m int, str1, str2, temp string) string {
+    if n == 0 || m == 0 {
+        return temp
+    }
+    if str1[n-1] == str2[m-1] {
+        return findLcs(n-1, m-1, str1, str2, temp) + string(str1[n-1]) // append at end
+    }
+    l1 := findLcs(n-1, m, str1, str2, temp)
+    l2 := findLcs(n, m-1, str1, str2, temp)
+    if len(l1) > len(l2) {
+        return l1
+    }
+    return l2
+}
