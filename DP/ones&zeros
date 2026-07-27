@@ -1,0 +1,62 @@
+https://leetcode.com/problems/ones-and-zeroes/
+
+
+You are given an array of binary strings strs and two integers m and n.
+
+Return the size of the largest subset of strs such that there are at most m 0's and n 1's in the subset.
+
+A set x is a subset of a set y if all elements of x are also elements of y.
+
+
+func findMaxForm(strs []string, m int, n int) int {
+    dp := make([][]int, m+1)
+    for i:= range dp {
+        dp[i]= make([]int,n+1)
+    }
+    for ind:= len(strs)-1; ind>=0;ind-- {
+         cnt0, cnt1 := countzeroones(strs[ind])
+         if cnt0 > m || cnt1 > n {
+                continue
+         }
+        for i := m; i >= cnt0; i-- {
+            for j := n; j >= cnt1; j-- {
+                dp[i][j] = max(dp[i][j],
+                            1+dp[i-cnt0][j-cnt1])
+            }
+        }
+    }
+    return dp[m][n]
+    //return recurs(0,m,n,strs)
+}
+
+
+func recurs(index int,m int, n int, strs []string) int {
+    if index == len(strs) {
+        return 0
+    }
+
+    // Option 1: skip current string
+    res := recurs(index+1, m, n, strs)
+
+    // Option 2: take current string
+    cnt0, cnt1 := countzeroones(strs[index])
+
+    if cnt0 <= m && cnt1 <= n {
+        res = max(
+            res,
+            1+recurs(index+1, m-cnt0, n-cnt1, strs),
+        )
+    }
+
+    return res
+}
+
+func countzeroones(str string)(int,int) {
+    cnt1 := 0
+    for _, ch := range str {
+        if ch=='1' {
+            cnt1++
+        } 
+    }
+    return len(str)-cnt1,cnt1
+} 
