@@ -1,0 +1,67 @@
+https://leetcode.com/problems/minimum-falling-path-sum/description/
+Given an n x n array of integers matrix, return the minimum sum of any falling path through matrix.
+
+A falling path starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position (row, col) will be (row + 1, col - 1), (row + 1, col), or (row + 1, col + 1).
+
+
+
+func minFallingPathSum(matrix [][]int) int {
+    //memo := make(map[[2]int]int)
+    dp := make([][]int, len(matrix))
+    for i := range dp {
+        dp[i]= make([]int, len(matrix[0]))
+        for j:= range dp[i] {
+            dp[i][j]= int(1e9)
+        }
+    }
+    for j:=0; j<len(dp[0]);j++ {
+        dp[0][j]=matrix[0][j]
+    }
+    //res := int(1e9)
+    for i:=1; i<len(matrix);i++ {
+        for j:=0; j<len(matrix[0]); j++ {
+            left := int(1e9)
+            if j > 0 {
+                left = dp[i-1][j-1]
+            }
+
+            right := int(1e9)
+            if j+1 < len(matrix[0]) {
+                right = dp[i-1][j+1]
+            }
+
+            dp[i][j] = matrix[i][j] + min(dp[i-1][j], left, right)
+        }
+    }
+    // for j:=0; j<len(matrix[0]); j++ {
+    //     res = min(recurs(len(matrix)-1, j, matrix,memo), res)
+    // }
+    //return res
+    ans := int(1e9)
+    last := len(matrix) - 1
+
+    for j := 0; j < len(matrix[0]); j++ {
+        ans = min(ans, dp[last][j])
+    }
+
+    return ans
+}
+
+
+func recurs(i int, j int, matrix [][]int, memo map[[2]int]int) int {
+    if j < 0 || j >= len(matrix[0]) {
+        return int(1e9) // invalid column
+    }
+    key := [2]int{i,j}
+    if _, ok:= memo[key]; ok {
+        return memo[key]
+    }
+    if i == 0 {
+        return matrix[0][j] // reached the first row
+    }
+    up := matrix[i][j] + recurs(i-1,j,matrix,memo)
+    diagl :=  matrix[i][j] + recurs(i-1,j-1,matrix,memo)
+    diagr :=  matrix[i][j] + recurs(i-1,j+1,matrix,memo)
+    memo[key] = min(up,diagl,diagr)
+    return min(up,diagl,diagr)
+}
