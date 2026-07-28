@@ -1,0 +1,94 @@
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+
+There are n cities connected by some number of flights. You are given an array flights where flights[i] = [fromi, toi, pricei] indicates that there is a flight from city fromi to city toi with cost pricei.
+
+You are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. If there is no such route, return -1.
+
+
+func findCheapestPrice(n int, flights [][]int, src int, dst int, k int) int {
+    adjmap := make(map[int][][2]int)
+    for _, flight := range flights {
+        if len(adjmap[flight[0]])!=0 {
+            adjmap[flight[0]] = append(adjmap[flight[0]], [2]int{flight[1], flight[2]})
+        } else {
+            adjmap[flight[0]] = [][2]int{{flight[1], flight[2]}}
+        }
+    }
+    memo := make(map[[2]int]int)
+    res := recurs(k+1, adjmap,src,dst,memo)
+    if res == int(1e9) {
+        return -1
+    }
+    return res
+    dp := make([][]int, n)
+    for i:= range dp {
+        dp[i]=make([]int, k+2)
+    }
+    for i:=0; i<len(dp);i++ {
+        dp[i][0] = int(1e9)
+    }
+    for j:=0;j<=k+1;j++ {
+        dp[dst][j]=0
+    }
+    for n:=1; n<=k+1; n++ {
+        for city := 0; city < n; city++ {
+            cost := int(1e9)
+            for _, nbr := range adjmap[city] {
+                cost =min(nbr[1] + dp[nbr[0]][n-1], cost)
+            }
+            dp[city][n] = cost
+        }
+    }
+    return dp[dst][k+1]
+    
+    queue := make([][2]int, 0)
+    bestcostcity := make([]int,n)
+    for i := range bestcostcity {
+        bestcostcity[i] = int(1e9)
+    }
+    bestcostcity[src] = 0
+    queue = append(queue, [2]int{src,0})
+    cost := int(1e9)
+    level := k+1
+    for level >=0 && len(queue) != 0 {
+        size := len(queue)
+        for i:=0; i<size;i++ {
+            pop := queue[0]
+            if pop[0] == dst{
+                cost = min(cost, pop[1])
+            }
+            queue = queue[1:]
+            for _, nbrlst := range adjmap[pop[0]] {
+                if bestcostcity[nbrlst[0]] > pop[1]+nbrlst[1] {
+                    queue = append(queue, [2]int{nbrlst[0],pop[1]+nbrlst[1]})
+                    bestcostcity[nbrlst[0]] = pop[1]+nbrlst[1]
+                }
+
+            }
+
+        }
+        level--
+    }
+    if cost != int(1e9) {
+        return cost
+    }
+    return -1
+}
+func recurs(remflights int, adjmap map[int][][2]int, src int, dst int, memo map[[2]int]int) int {
+    if src == dst  {
+        return 0
+    }
+    if remflights==0 {
+        return int(1e9)
+    }
+    key :=[2]int{remflights,src}
+    if _, ok:= memo[key]; ok {
+        return memo[key]
+    }
+    cost := int(1e9)
+    for _, nbrlst := range adjmap[src] {
+        cost = min(nbrlst[1] + recurs(remflights-1, adjmap, nbrlst[0], dst,memo), cost)
+    }
+    memo[key] = cost
+    return cost
+}
