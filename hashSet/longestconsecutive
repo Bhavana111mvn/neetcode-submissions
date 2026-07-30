@@ -1,0 +1,35 @@
+https://leetcode.com/problems/longest-consecutive-sequence/description/?envType=problem-list-v2&envId=5lhmb4mj
+
+Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+You must write an algorithm that runs in O(n) time.
+
+
+func longestConsecutive(nums []int) int {
+    if len(nums) == 0 {
+        return 0
+    }
+
+    set := make(map[int]bool)
+    for _, x := range nums {
+        set[x] = true
+    }
+
+    longest := 1
+
+    for x := range set {
+        if !set[x-1] {
+            curr := x
+            length := 1
+
+            for set[curr+1] {
+                curr++
+                length++
+            }
+            if length > longest {
+                longest = length
+            }
+        }
+    }
+    return longest
+}
