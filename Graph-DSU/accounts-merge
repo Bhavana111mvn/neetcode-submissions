@@ -1,0 +1,45 @@
+https://leetcode.com/problems/accounts-merge/?utm_source=chatgpt.com
+func accountsMerge(accounts [][]string) [][]string {
+    emailSet := make(map[int]map[string]bool) // root -> set of emails
+    parents := make([]int, len(accounts))
+
+for i := range accounts {
+    root := findParent(i, parents)
+    if emailSet[root] == nil {
+        emailSet[root] = make(map[string]bool)
+    }
+    for j := 1; j < len(accounts[i]); j++ {
+        emailSet[root][accounts[i][j]] = true
+    }
+}
+
+finalstr := [][]string{}
+for root, emails := range emailSet {
+    name := accounts[root][0]
+    emailList := []string{}
+    for email := range emails {
+        emailList = append(emailList, email)
+    }
+    sort.Strings(emailList)
+    row := append([]string{name}, emailList...)
+    finalstr = append(finalstr, row)
+}
+return finalstr
+    
+}
+
+func Union(i, j int, parents []int) {
+    if findParent(i, parents) != findParent(j, parents) {
+        parents[findParent(j, parents)]=findParent(i, parents)
+    } 
+    return 
+} 
+
+
+func findParent( i int, parents []int)int {
+    if i == parents[i] {
+        return i
+    }
+    parents[i]=findParent(parents[i],parents)
+    return parents[i]
+}
