@@ -1,0 +1,31 @@
+https://leetcode.com/problems/count-ways-to-build-good-strings/?envType=study-plan-v2&envId=dynamic-programming
+Given the integers zero, one, low, and high, we can construct a string by starting with an empty string, and then at each step perform either of the following:
+
+Append the character '0' zero times.
+Append the character '1' one times.
+This can be performed any number of times.
+
+A good string is a string constructed by the above process having a length between low and high (inclusive).
+
+Return the number of different good strings that can be constructed satisfying these properties. Since the answer can be large, return it modulo 109 + 7.
+func countGoodStrings(low int, high int, zero int, one int) int {
+    dp := make([]int, high+1)
+    for i:= range dp {
+        dp[i]=0
+    }
+    dp[0]=1
+    for i:=1; i<len(dp);i++ {
+        if i-zero >=0 {
+            dp[i]+=dp[i-zero]%1000000007
+        }
+        if i-one >=0 {
+            dp[i]+=dp[i-one]%1000000007
+        } 
+    }
+    res := 0
+    for j:= low; j<=high; j++ {
+        res +=(dp[j]% 1000000007)
+    }
+    return res% 1000000007
+    
+}
