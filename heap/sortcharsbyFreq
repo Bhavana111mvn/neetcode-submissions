@@ -1,0 +1,56 @@
+
+https://leetcode.com/problems/sort-characters-by-frequency/description/
+
+Given a string s, sort it in decreasing order based on the frequency of the characters. The frequency of a character is the number of times it appears in the string.
+
+Return the sorted string. If there are multiple answers, return any of them.
+
+
+
+
+type heapi struct {
+    ch rune
+    count int
+}
+type MaxHeap []heapi
+
+func(h MaxHeap)Len() int {
+    return len(h)
+}
+func(h MaxHeap)Swap(i,j int) {
+    h[i],h[j]=h[j],h[i]
+}
+func(h MaxHeap)Less(i,j int) bool {
+    return h[i].count > h[j].count
+}
+func(h *MaxHeap)Push(x any) {
+    *h = append(*h, x.(heapi))
+}
+func (h *MaxHeap) Pop() any {
+    old := *h
+    n := len(old)
+    item := old[n-1]
+    *h = old[:n-1]
+    return item
+}
+func frequencySort(s string) string {
+    runemap := make(map[rune]int)
+    for _, ch:= range s {
+        runemap[ch]++
+    }
+    h := &MaxHeap{}
+    heap.Init(h)
+    for key, val := range runemap {
+        heap.Push(h, heapi{ch:key,count:val})
+    } 
+    res := ""
+    for h.Len()!=0 {
+        pop := heap.Pop(h).(heapi)
+        for pop.count !=0 {
+            res += string(pop.ch)
+            pop.count--
+        }
+    }
+    return res
+    
+}
