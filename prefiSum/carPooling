@@ -1,0 +1,68 @@
+https://leetcode.com/problems/car-pooling/description/
+There is a car with capacity empty seats. The vehicle only drives east (i.e., it cannot turn around and drive west).
+
+You are given the integer capacity and an array trips where trips[i] = [numPassengersi, fromi, toi] indicates that the ith trip has numPassengersi passengers and the locations to pick them up and drop them off are fromi and toi respectively. The locations are given as the number of kilometers due east from the car's initial location.
+
+Return true if it is possible to pick up and drop off all passengers for all the given trips, or false otherwise.
+
+
+
+type state struct {
+    passcount int
+    endstop int
+}
+
+type minHeap []state
+
+func(h minHeap)Len()int {
+    return len(h)
+}
+func(h minHeap)Less(i,j int)bool {
+    return h[i].endstop<h[j].endstop
+}
+func(h minHeap)Swap(i,j int) {
+    h[i],h[j] = h[j],h[i]
+}
+
+func (h *minHeap) Push(x any) {
+    *h = append(*h, x.(state))
+}
+func (h *minHeap) Peek() state {
+	return (*h)[0]
+}
+
+func (h *minHeap) Pop() any {
+    old := *h
+    n := len(old)
+    item := old[n-1]
+    *h = old[:n-1]
+    return item
+}
+
+func carPooling(trips [][]int, capacity int) bool {
+    sort.Slice(trips, func(i,j int)bool {
+        return trips[i][1] < trips[j][1]
+    })
+    fmt.Println(trips)
+    currheapcap := trips[0][0]
+    heapi := &minHeap{{passcount: trips[0][0], endstop: trips[0][2]}}
+    heap.Init(heapi)
+    if currheapcap > capacity {
+        return false
+    }
+    for ind:=1; ind <len(trips);ind++ {
+        currcap := trips[ind][0]
+        for heapi.Len() > 0 && heapi.Peek().endstop <= trips[ind][1]  {
+            pop := heap.Pop(heapi).(state)
+            currheapcap-= pop.passcount
+        }
+        if currcap+currheapcap > capacity {
+            return false
+        } else {
+            heap.Push(heapi,state{passcount: trips[ind][0], endstop: trips[ind][2]})
+            currheapcap+= trips[ind][0]
+        }
+    }
+    return true
+    
+}
