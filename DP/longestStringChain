@@ -1,0 +1,59 @@
+https://leetcode.com/problems/longest-string-chain/description/?envType=study-plan-v2&envId=dynamic-programming-grandmaster
+
+You are given an array of words where each word consists of lowercase English letters.
+
+wordA is a predecessor of wordB if and only if we can insert exactly one letter anywhere in wordA without changing the order of the other characters to make it equal to wordB.
+
+For example, "abc" is a predecessor of "abac", while "cba" is not a predecessor of "bcad".
+A word chain is a sequence of words [word1, word2, ..., wordk] with k >= 1, where word1 is a predecessor of word2, word2 is a predecessor of word3, and so on. A single word is trivially a word chain with k == 1.
+
+Return the length of the longest possible word chain with words chosen from the given list of words.
+
+func longestStrChain(words []string) int {
+    sort.Slice(words, func(i,j int)bool{
+        return len(words[i]) <len(words[j])
+    })
+    //memo := make(map[string]int)
+    wordmap := make(map[string]int)
+    for ind,str := range words {
+        wordmap[str] = ind
+    }
+    res :=0
+    dp := make([]int, len(words))
+    for i:=0; i<len(dp);i++ {
+        str := words[i]
+        cnt := 0
+        for j:=0; j<len(str);j++ {
+            temp := str[0:j]+str[j+1:]
+            if _,ok:=wordmap[temp]; ok {
+                cnt = max(dp[wordmap[temp]], cnt)
+            }
+        }
+        dp[i]=cnt+1
+    }
+    fmt.Println(dp)
+    for i:= len(words)-1; i>=0;i-- {
+        res = max(res,dp[i])
+    }
+    return res
+    // for i:= len(words)-1; i>=0;i-- {
+    //     res=max(recurs(words,wordmap, words[i],memo), res)
+    // }
+    //return res
+}
+
+func recurs(words []string, wordmap map[string]int, temp string, memo map[string]int ) int{
+    if _,ok:=wordmap[temp];!ok  {
+        return 0 
+    } 
+    if _,ok := memo[temp]; ok {
+        return memo[temp]
+    }
+    str, cnt:= temp,0
+    for j:=0; j<len(str);j++ {
+        temp := str[0:j]+str[j+1:]
+        cnt = max(1+ recurs(words, wordmap, temp,memo), cnt)
+    }
+    memo[temp] = cnt
+    return cnt
+}
