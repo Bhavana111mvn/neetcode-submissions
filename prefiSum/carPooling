@@ -7,61 +7,16 @@ Return true if it is possible to pick up and drop off all passengers for all the
 
 
 
-type state struct {
-    passcount int
-    endstop int
-}
-
-type minHeap []state
-
-func(h minHeap)Len()int {
-    return len(h)
-}
-func(h minHeap)Less(i,j int)bool {
-    return h[i].endstop<h[j].endstop
-}
-func(h minHeap)Swap(i,j int) {
-    h[i],h[j] = h[j],h[i]
-}
-
-func (h *minHeap) Push(x any) {
-    *h = append(*h, x.(state))
-}
-func (h *minHeap) Peek() state {
-	return (*h)[0]
-}
-
-func (h *minHeap) Pop() any {
-    old := *h
-    n := len(old)
-    item := old[n-1]
-    *h = old[:n-1]
-    return item
-}
-
 func carPooling(trips [][]int, capacity int) bool {
-    sort.Slice(trips, func(i,j int)bool {
-        return trips[i][1] < trips[j][1]
-    })
-    fmt.Println(trips)
-    currheapcap := trips[0][0]
-    heapi := &minHeap{{passcount: trips[0][0], endstop: trips[0][2]}}
-    heap.Init(heapi)
-    if currheapcap > capacity {
-        return false
+    diff := make([]int,1001)
+    for _, trip := range trips {
+        diff[trip[1]] += trip[0]
+        diff[trip[2]]   -= trip[0]
     }
-    for ind:=1; ind <len(trips);ind++ {
-        currcap := trips[ind][0]
-        for heapi.Len() > 0 && heapi.Peek().endstop <= trips[ind][1]  {
-            pop := heap.Pop(heapi).(state)
-            currheapcap-= pop.passcount
-        }
-        if currcap+currheapcap > capacity {
-            return false
-        } else {
-            heap.Push(heapi,state{passcount: trips[ind][0], endstop: trips[ind][2]})
-            currheapcap+= trips[ind][0]
-        }
+    curr := 0
+    for pos:=0; pos<=1000;pos++ {
+        curr += diff[pos]
+        if curr > capacity {return false }
     }
     return true
     
