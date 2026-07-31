@@ -1,0 +1,48 @@
+https://leetcode.com/problems/remove-stones-to-minimize-the-total/description/
+You are given a 0-indexed integer array piles, where piles[i] represents the number of stones in the ith pile, and an integer k. You should apply the following operation exactly k times:
+
+Choose any piles[i] and remove floor(piles[i] / 2) stones from it.
+Notice that you can apply the operation on the same pile more than once.
+
+Return the minimum possible total number of stones remaining after applying the k operations.
+
+floor(x) is the largest integer that is smaller than or equal to x (i.e., rounds x down).
+
+type MaxHeap []int
+
+func(h MaxHeap)Len() int {
+    return len(h)
+}
+func(h MaxHeap)Swap( i, j int) {
+    h[i],h[j]=h[j],h[i]
+}
+func(h MaxHeap)Less(i,j int)bool {
+    return h[i] > h[j]
+}
+func(h *MaxHeap)Push(x any) {
+    *h = append(*h, x.(int))
+}
+func(h *MaxHeap)Pop() any {
+    old := *h
+    n := len(old)
+    item := old[n-1]
+    *h = old[:n-1]
+    return item
+}
+
+
+func minStoneSum(piles []int, k int) int {
+    h := MaxHeap(piles)
+    heap.Init(&h)
+    res := 0
+    for k!=0 {
+        pop:= heap.Pop(&h)
+        heap.Push(&h,pop.(int)-pop.(int)/2)
+        k--
+    }
+    for h.Len() !=0 {
+        pop:= heap.Pop(&h)
+        res += pop.(int)
+    }
+    return res
+}
