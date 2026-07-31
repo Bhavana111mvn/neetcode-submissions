@@ -1,0 +1,21 @@
+func frequencySort(s string) string {
+    freq := make(map[rune]int)
+	for _, char := range s {
+		freq[char]++
+	}
+	chars := make([]rune, 0, len(freq))
+	for char := range freq {
+		chars = append(chars, char)
+	}
+
+	sort.Slice(chars, func(i, j int) bool {
+		return freq[chars[i]] > freq[chars[j]]
+	})
+	var result strings.Builder
+	for _, char := range chars {
+		count := freq[char]
+		result.WriteString(strings.Repeat(string(char), count))
+	}
+
+	return result.String()
+}
