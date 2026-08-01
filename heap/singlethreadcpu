@@ -1,0 +1,70 @@
+https://leetcode.com/problems/single-threaded-cpu/
+type Task struct {
+    enqueue int
+    process int
+    index   int
+}
+type heapi struct {
+    process int
+    index   int
+}
+type MinHeap []heapi
+
+func(h MinHeap) Len() int {
+    return len(h)
+}
+func(h MinHeap) Swap(i,j int) {
+    h[i],h[j]=h[j],h[i]
+}
+func(h MinHeap)Less(i,j int)bool {
+    if h[i].process == h[j].process {
+        return h[i].index < h[j].index
+    }
+    return h[i].process < h[j].process
+}
+func(h *MinHeap)Push(x any) {
+    *h = append(*h,x.(heapi))
+}
+func (h *MinHeap) Pop() any {
+    old := *h
+    n := len(old)
+    item := old[n-1]
+    *h = old[:n-1]
+    return item
+}
+func getOrder(tasks [][]int) []int {
+    arr := make([]Task, len(tasks))
+    for i, t := range tasks {
+        arr[i] = Task{
+            enqueue: t[0],
+            process: t[1],
+            index:   i,
+        }
+    }
+    sort.Slice(arr, func(i,j int)bool {
+        return arr[i].enqueue < arr[j].enqueue
+    })
+    fmt.Println(arr)
+    h := &MinHeap{}
+    heap.Init(h)
+    
+    currTime := arr[0].enqueue
+    i := 0
+    n := len(arr)
+    res := make([]int,0)
+
+    for i<n || h.Len()!=0 {
+        for i < n && arr[i].enqueue <= currTime {
+            heap.Push(h, heapi{process:arr[i].process, index:arr[i].index})
+            i++
+        }
+        if h.Len()==0 {
+            currTime = arr[i].enqueue
+            continue
+        }
+        pop := heap.Pop(h).(heapi)
+        res = append(res, pop.index)
+        currTime += pop.process
+    }
+    return res
+}
