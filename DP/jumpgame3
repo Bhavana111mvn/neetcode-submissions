@@ -1,0 +1,32 @@
+https://leetcode.com/problems/jump-game-iii/description/
+Given an array of non-negative integers arr, you are initially positioned at start index of the array. When you are at index i, you can jump to i + arr[i] or i - arr[i], check if you can reach any index with value 0.
+
+Notice that you can not jump outside of the array at any time.
+
+func canReach(arr []int, start int) bool {
+    visited := make(map[int]bool)
+    recurs(arr,start,visited)
+    for ind, val := range arr {
+        if val==0 && visited[ind] {
+            return true
+        }
+    }
+    return false
+    
+}
+
+func recurs(arr []int, ind int, visited map[int]bool) {
+    if ind <0 || (ind >= len(arr)) {
+        return
+    }
+    if arr[ind] == 0 {
+        visited[ind] = true 
+        return
+    }
+    if !visited[ind] {
+       visited[ind] = true 
+       recurs(arr, ind+arr[ind], visited)
+       recurs(arr, ind-arr[ind],visited)
+    }
+    return 
+}
