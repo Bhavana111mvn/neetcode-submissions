@@ -1,0 +1,29 @@
+https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/
+func nearestExit(maze [][]byte, entrance []int) int {
+    queue := make([][]int,0)
+    queue = append(queue, entrance)
+    grid := maze
+    nbrlst :=[][2]int{{-1,0},{1,0},{0,-1},{0,1}}
+    level :=0
+    for len(queue)!=0 {
+        size := len(queue)
+        for i:=0; i<size;i++ {
+            p,q := queue[0][0], queue[0][1]
+            queue = queue[1:]
+            if (p == len(grid)-1  || q== len(grid[0])-1 || p==0 || q==0) && !((p == entrance[0]) && (q==entrance[1])) {
+                return level
+            }
+            for _, nbr := range nbrlst {
+                m, n:= p+nbr[0],q+nbr[1]
+                if m <0 || m==len(grid) || n<0 ||n==len(grid[0]) || grid[m][n]=='+' {
+                    continue
+                }
+                grid[m][n]='+'
+                queue = append(queue,[]int{m,n})
+            }
+
+        }
+        level++
+    }
+    return -1  
+}
