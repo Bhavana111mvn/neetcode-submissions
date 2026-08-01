@@ -1,0 +1,57 @@
+https://leetcode.com/problems/target-sum/description/
+
+
+You are given an integer array nums and an integer target.
+
+You want to build an expression out of nums by adding one of the symbols '+' and '-' before each integer in nums and then concatenate all the integers.
+
+For example, if nums = [2, 1], you can add a '+' before 2 and a '-' before 1 and concatenate them to build the expression "+2-1".
+Return the number of different expressions that you can build, which evaluates to target.
+
+func findTargetSumWays(nums []int, target int) int {
+    totsum := 0
+    for _, num := range nums {
+        totsum += num
+    }
+    if abs(target) > totsum || (totsum+target)%2 != 0 {
+        return 0
+    }
+    //memo := make(map[[2]int]int)
+    dp := make([]int,  (totsum+target)/2+1)
+    dp[0] =1 
+    for ind :=1; ind <=len(nums);ind++ {
+        tmp := make([]int,  (totsum+target)/2+1)
+        for sum := 0; sum<=(totsum+target)/2; sum++ {
+            if sum >= nums[ind-1] {
+                tmp[sum] +=dp[sum-nums[ind-1]]
+            }
+            tmp[sum] +=  dp[sum]
+        } 
+        dp = tmp
+    }
+    return dp[(totsum+target)/2]
+    //return recurs(nums, (totsum+target)/2, len(nums)-1,memo)
+}
+
+func recurs(nums []int, target int, ind int,memo map[[2]int]int)int {
+    if ind<0 {
+        if target == 0 {
+            return 1
+        }
+        return 0
+    }
+    key := [2]int{ind,target}
+    if _,ok := memo[key]; ok {
+        return memo[key]
+    }
+    plus := recurs(nums, target-nums[ind], ind-1,memo)
+    minus := recurs(nums, target, ind-1,memo)
+    memo[key]= plus+minus
+    return plus+minus
+}
+func abs( a int) int {
+    if a >0 {
+        return a
+    }
+    return -a
+}
