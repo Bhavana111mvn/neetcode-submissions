@@ -1,0 +1,45 @@
+https://leetcode.com/problems/jump-game-ii/
+You are given a 0-indexed array of integers nums of length n. You are initially positioned at index 0.
+
+Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at index i, you can jump to any index (i + j) where:
+
+0 <= j <= nums[i] and
+i + j < n
+Return the minimum number of jumps to reach index n - 1. The test cases are generated such that you can reach index n - 1.
+
+
+
+func jump(nums []int) int {
+    if len(nums)==1 {
+        return 0
+    }
+    //memo := make(map[int]int)
+    dp := make([]int, len(nums)) // state if i:len(nums) is array how many jumps to reach end
+    dp[len(nums)-1] = 0
+    for m := len(nums)-2; m>=0; m-- {
+        res := int(1e9)
+        for n:=1; n<=nums[m]; n++ {
+            res = min(1+dp[min(len(nums)-1,m+n)], res)
+        }
+        dp[m] = res
+    }
+    return dp[0]
+    //return recurs(nums,0,memo)
+    
+}
+
+func recurs(nums[]int, ind int, memo map[int]int)int {
+    if ind >= len(nums)-1 {
+        return 0
+    }
+    res := int(1e9)
+    key := ind
+    if _,ok:= memo[key]; ok {
+        return memo[key]
+    }
+    for j:=1; j<=nums[ind]; j++ {
+        res = min(1+recurs(nums,ind+j,memo), res)
+    }
+    memo[key]=res
+    return res
+}
