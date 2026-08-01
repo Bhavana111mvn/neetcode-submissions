@@ -1,0 +1,57 @@
+func numEnclaves(grid [][]int) int {
+    parents := make(map[[2]int][2]int)
+    dummy := [2]int{-1, -1}
+    parents[dummy] = dummy
+    components := 0
+    for m:=0; m<len(grid);m++ {
+        for n:=0; n<len(grid[0]);n++ {
+            if grid[m][n]==1 {
+                components++
+                key := [2]int{m,n}
+                parents[key] =  key
+            }
+
+        }
+    }
+    for key, _ := range parents {
+        if key == dummy {
+            continue
+        }
+        i, j:= key[0],key[1]
+        if i == 0 || i == len(grid)-1 || j == 0 || j == len(grid[0])-1 {
+            Union(key, dummy, parents)
+        }
+        dirs := [][2]int{{1,0},{-1,0},{0,1},{0,-1}}
+        for _, d := range dirs {
+            ni, nj := i+d[0], j+d[1]
+            nbr := [2]int{ni, nj}
+            if _, ok := parents[nbr]; ok {
+                Union(key, nbr, parents)
+            }
+        }
+    } 
+    dummyParent := findParent(dummy, parents)
+    ans := 0
+    for key := range parents {
+        if findParent(key, parents) != dummyParent {
+            ans++
+        }
+    }
+    return ans
+}
+
+func Union(key, nbr [2]int, parents  map[[2]int][2]int) {
+    key_parent, nbr_parent := findParent(key, parents), findParent(nbr, parents)
+    if key_parent != nbr_parent {
+        parents[key_parent] = nbr_parent
+    }
+}
+
+func findParent(key [2]int,  parents  map[[2]int][2]int) [2]int {
+    if parents[key] == key {
+        return key
+    }
+    parents[key] = findParent(parents[key], parents)
+    return parents[key]
+}
+
