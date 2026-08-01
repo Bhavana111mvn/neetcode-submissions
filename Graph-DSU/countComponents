@@ -1,0 +1,45 @@
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/description/
+
+ou have a graph of n nodes. You are given an integer n and an array edges where edges[i] = [ai, bi] indicates that there is an edge between ai and bi in the graph.
+
+Return the number of connected components in the graph.
+
+
+func countComponents(n int, edges [][]int) int {
+    components := n
+    parents := make([]int,n)
+    rank := make([]int,n)
+    for i:= range parents {
+        parents[i]=i
+    }
+    for _, edge := range edges {
+        components = Union(edge[0],edge[1], parents,components, rank)
+    }
+    return components
+}
+
+
+func Union(i,j int, parents []int, components int, rank []int) int {
+    i_parent,j_parent := findParent(i, parents),findParent(j, parents)
+    if i_parent == j_parent {
+        return components
+    }
+    if rank[i_parent] > rank[j_parent] {
+        parents[j_parent] = i_parent
+    } else if rank[j_parent] > rank[i_parent] {
+        parents[i_parent]=j_parent
+    } else {
+        parents[i_parent]=j_parent
+        rank[j_parent]++
+    }
+    return components-1
+} 
+
+
+func findParent(i int, parents []int) int {
+    if parents[i] ==i {
+        return i
+    }
+    parents[i] = findParent(parents[i], parents)
+    return parents[i]
+}
