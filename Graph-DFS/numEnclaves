@@ -1,0 +1,48 @@
+https://leetcode.com/problems/number-of-enclaves/
+
+Now what we have done is start from boundary land cell and see if we can reach any landcell and mark visited we are not changing visited as we want to know if land cell can be reached by any boundary cell . After dfs is done we have visited map with 1 cells . 1 cells which are remaining not prsent in map gives answer of valid land cells
+
+func numEnclaves(grid [][]int) int {
+    cnt := 0
+    visited := make(map[[2]int]bool)
+    for i:=0; i<len(grid);i++ {
+        for j:=0; j<len(grid[0]);j++ {
+            if grid[i][j] ==1 && (i==len(grid)-1 ||i==0||j==0|| j==len(grid[0])-1) {
+                visited[[2]int{i,j}] = true
+                /// start dfs and find if its valid cell or not
+                dfs(grid,i,j,visited)
+            }
+        }
+    }
+    for i:=0; i<len(grid);i++ {
+        for j:=0; j<len(grid[0]);j++ {
+            if grid[i][j] ==1 && !(i==len(grid)-1 || j==len(grid[0])-1 || i==0||j==0) {
+                key := [2]int{i,j}
+                if !visited[key] {
+                    cnt++
+                }
+
+            }
+        }
+    }
+    return cnt
+}
+
+func dfs(grid[][]int, i, j int, visited map[[2]int]bool){
+    if i<0 || i == len(grid) || j<0 || j==len(grid[0]) || grid[i][j]==0 {
+        return 
+    }
+    nbrlst := [][2]int{{-1,0}, {1,0}, {0,-1},{0,1}}
+    for  _, nbr := range nbrlst {
+        p,q := i+nbr[0], j+nbr[1]
+        if p<0 || p == len(grid) || q<0 || q==len(grid[0]) {
+            continue
+        }
+        key := [2]int{p,q}
+        if grid[p][q] ==1 && visited[key]==false {
+            visited[key] = true 
+            dfs(grid,p,q,visited)      
+        }
+    }
+    return 
+}
