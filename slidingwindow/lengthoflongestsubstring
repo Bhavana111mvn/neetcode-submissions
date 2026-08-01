@@ -1,0 +1,28 @@
+https://leetcode.com/problems/longest-substring-without-repeating-characters/?utm_source=chatgpt.com
+
+Given a string s, find the length of the longest substring without duplicate characters.
+
+func lengthOfLongestSubstring(s string) int {
+    left, right := 0,1
+    freqmap := make(map[byte]bool)
+    if len(s) == 0 {
+        return 0
+    }
+
+    freqmap[s[left]] = true
+    finallen := 1
+    for right < len(s) {
+        if !freqmap[s[right]] {
+            freqmap[s[right]]= true
+        } else {
+            finallen = max(right-left, finallen)
+            for s[left]!=s[right] {
+                freqmap[s[left]] = false
+                left++
+            }
+            left++
+        }
+        right++
+    }
+    return max(right-left, finallen)
+}
