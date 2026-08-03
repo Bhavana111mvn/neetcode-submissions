@@ -1,0 +1,28 @@
+https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/
+func longestSubarray(nums []int, limit int) int {
+    left, right := 0,0
+    longlen := 0
+    mini, maxi := nums[0],nums[0]
+    for right < len(nums) {
+        if absdiff(nums[right],maxi) <= limit && absdiff(nums[right],mini) <=limit {
+            maxi = max(maxi,nums[right])
+            mini = min(mini,nums[right])
+        } else {
+            // window drop
+            longlen = max(longlen, right-left)
+            left++
+            right=left
+            mini, maxi = nums[left],nums[left]
+        }
+        right++
+    }
+    longlen = max(longlen, right-left)
+    return longlen
+}
+
+func absdiff(a,b int) int {
+    if a>b {
+        return a-b
+    }
+    return b-a
+}
