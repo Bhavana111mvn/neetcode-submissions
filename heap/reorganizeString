@@ -1,0 +1,64 @@
+https://leetcode.com/problems/reorganize-string/
+
+type heapi struct {
+    ch byte
+    freq int
+}
+
+type MaxHeap []heapi
+
+func(h MaxHeap)Len() int {
+    return len(h)
+}
+func(h MaxHeap)Swap(i,j int) {
+    h[i],h[j]=h[j],h[i]
+}
+func(h MaxHeap)Less(i,j int) bool {
+    return h[i].freq > h[j].freq
+}
+func(h *MaxHeap)Push(x any) {
+    *h = append(*h, x.(heapi))
+}
+func(h *MaxHeap)Pop() any {
+    old := *h
+    n := len(old)
+    item := old[n-1]
+    *h = old[:n-1]
+    return item
+
+}
+func reorganizeString(s string) string {
+    freqmap := make(map[byte]int)
+    for j:=0; j<len(s);j++ {
+        freqmap[s[j]]++
+    }
+    finalstr := ""
+    h := &MaxHeap{}
+    heap.Init(h)
+    for key, val := range freqmap {
+        heap.Push(h, heapi{ch:key, freq:val})
+    } 
+    prev := heapi{ch: '#', freq: 0}
+
+    for h.Len() > 0 {
+        curr := heap.Pop(h).(heapi)
+
+        finalstr += string(curr.ch)
+        curr.freq--
+
+        // push previous character back (only after using another character)
+        if prev.freq > 0 {
+            heap.Push(h, prev)
+        }
+
+        // current becomes previous for next iteration
+        prev = curr
+    }
+
+    if len(finalstr) != len(s) {
+        return ""
+    }
+
+    return finalstr
+    
+}
