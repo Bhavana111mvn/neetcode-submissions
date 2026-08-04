@@ -1,0 +1,46 @@
+https://leetcode.com/problems/detect-cycles-in-2d-grid/
+func containsCycle(grid [][]byte) bool {
+    inRecursion := make([][]bool, len(grid))
+    for i:= range inRecursion {
+        inRecursion[i]=make([]bool, len(grid[0]))
+    }
+    visited := make([][]bool, len(grid))
+    for i:= range visited {
+        visited[i]=make([]bool, len(grid[0]))
+    }
+    res := false
+    for i:=0; i<len(grid);i++ {
+        for j:=0; j<len(grid[0]);j++ {
+            if !visited[i][j] {
+               res = dfs(i,j, grid,visited,inRecursion,i,j)
+                if res {
+                    return true
+                }
+            }
+        }
+    }
+    return res  
+}
+
+func dfs(i, j int, grid [][]byte, visited [][]bool, inRecursion [][]bool, parent_row int, parent_col int) bool {
+    visited[i][j]=true
+    inRecursion[i][j]=true
+    nbrlst := [][2]int{{-1,0}, {1,0}, {0,-1},{0,1}}
+    res := false
+    for _, nbr := range nbrlst {
+        p,q:= i+nbr[0], j+nbr[1]
+        if p<0 || p==len(grid) || q<0 || q== len(grid[0]) {
+            continue
+        }
+        if !visited[p][q] && grid[p][q]==grid[i][j] {
+            res = dfs(p,q,grid,visited,inRecursion, i,j)
+            if res {
+                return true
+            }
+        } else if (p !=parent_row || q !=parent_col) && inRecursion[p][q] == true {
+            return true
+        }
+    }
+    inRecursion[i][j]=false
+    return res
+}
