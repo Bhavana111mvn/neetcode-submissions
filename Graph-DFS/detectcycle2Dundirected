@@ -1,0 +1,40 @@
+https://leetcode.com/problems/detect-cycles-in-2d-grid/
+func containsCycle(grid [][]byte) bool {
+    visited := make([][]bool, len(grid))
+    for i:= range visited {
+        visited[i]=make([]bool, len(grid[0]))
+    }
+    res := false
+    for i:=0; i<len(grid);i++ {
+        for j:=0; j<len(grid[0]);j++ {
+            if !visited[i][j] {
+               res = dfs(i,j, grid,visited,i,j)
+                if res {
+                    return true
+                }
+            }
+        }
+    }
+    return res  
+}
+
+func dfs(i, j int, grid [][]byte, visited [][]bool,  parent_row int, parent_col int) bool {
+    visited[i][j]=true
+    nbrlst := [][2]int{{-1,0}, {1,0}, {0,-1},{0,1}}
+    res := false
+    for _, nbr := range nbrlst {
+        p,q:= i+nbr[0], j+nbr[1]
+        if p<0 || p==len(grid) || q<0 || q== len(grid[0]) {
+            continue
+        }
+        if !visited[p][q] && grid[p][q]==grid[i][j] {
+            res = dfs(p,q,grid,visited, i,j)
+            if res {
+                return true
+            }
+        } else if visited[p][q] && (p !=parent_row || q !=parent_col) && grid[p][q]==grid[i][j] {
+            return true
+        }
+    }
+    return res
+}
