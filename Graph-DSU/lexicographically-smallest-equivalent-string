@@ -1,0 +1,44 @@
+https://leetcode.com/problems/lexicographically-smallest-equivalent-string/description/
+func smallestEquivalentString(s1 string, s2 string, baseStr string) string {
+    parents := make(map[byte]byte)
+    for i:=0; i<len(s1);i++ {
+        parents[s1[i]] = s1[i]
+        parents[s2[i]] = s2[i]
+    } /// this is undirected graph
+
+    for i:=0; i<len(s1);i++ {
+        Union(s1[i],s2[i],parents)
+
+    }
+    finalstr := ""
+    for m:=0; m <len(baseStr);m++ {
+        if _, ok := parents[baseStr[m]]; ok {
+            finalstr = finalstr + string(findParent(parents[baseStr[m]], parents))
+        } else {
+            finalstr = finalstr + string(baseStr[m])
+        }
+        
+    }
+    return finalstr
+    
+}
+
+func Union(i,j byte, parents map[byte]byte) {
+    i_parent, j_parent := findParent(i, parents), findParent(j, parents)
+    if i_parent !=j_parent {
+        if i_parent<j_parent {
+            parents[j_parent] = i_parent
+        } else {
+            parents[i_parent] = j_parent
+        }
+    }
+}
+ 
+
+func findParent(i byte, parents map[byte]byte) byte{
+    if parents[i] == i {
+        return i
+    }
+    parents[i]=findParent(parents[i], parents)
+    return parents[i]
+}
