@@ -1,0 +1,34 @@
+https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
+func shipWithinDays(weights []int, days int) int {
+    maxi,total := 0,0
+    for _, weight := range weights {
+        maxi = max(weight, maxi)
+        total +=weight
+    }
+    start_cap,end_cap := maxi,total
+    mid := 0
+    for start_cap <= end_cap {
+        mid = start_cap +(end_cap-start_cap)/2
+        if noofdaysReq(weights,mid) > days {
+            start_cap = mid+1
+        } else  {
+            fmt.Println(end_cap)
+            end_cap = mid-1
+        }
+    }
+    return start_cap
+    
+}
+
+func noofdaysReq(weights []int, cap int) int {
+    currcnt, days := 0,1
+    for i:=0; i<len(weights);i++ {
+        if weights[i]+currcnt <= cap {
+            currcnt+=weights[i]
+        } else {
+            days++
+            currcnt=weights[i]
+        }
+    }
+    return days
+}
