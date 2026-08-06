@@ -1,0 +1,17 @@
+https://leetcode.com/problems/find-pivot-index/?envType=problem-list-v2&envId=prefix-sum
+func pivotIndex(nums []int) int {
+    total := 0
+    for _, num := range nums {
+        total +=num
+    }
+    leftsum, rightsum := 0, total
+    for i:=0; i<len(nums);i++ {
+        rightsum = rightsum - nums[i]
+        if rightsum == leftsum {
+            return i
+        }
+        leftsum = leftsum + nums[i]
+    }
+    return -1
+    
+}
