@@ -1,0 +1,21 @@
+https://leetcode.com/problems/subarray-sums-divisible-by-k/description/
+Given an integer array nums and an integer k, return the number of non-empty subarrays that have a sum divisible by k.
+
+A subarray is a contiguous part of an array.
+func subarraysDivByK(nums []int, k int) int {
+    prefixsum,ans := 0,0
+    remmap := make(map[int]int)
+    remmap[0]=1
+    for _, num := range nums {
+        prefixsum+= num
+        rem := prefixsum%k
+        if rem < 0 {
+            rem+=k
+        }
+        remmap[rem]++
+    }
+    for _, freq := range remmap {
+        ans +=freq*(freq-1)/2
+    }
+    return ans
+}
