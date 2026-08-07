@@ -1,0 +1,41 @@
+https://leetcode.com/problems/word-pattern-ii/description/?envType=problem-list-v2&envId=backtracking
+
+Given a pattern and a string s, return true if s matches the pattern.
+
+A string s matches a pattern if there is some bijective mapping of single characters to non-empty strings such that if each character in pattern is replaced by the string it maps to, then the resulting string is s. A bijective mapping means that no two characters map to the same string, and no character maps to two different strings.
+
+func wordPatternMatch(pattern string, s string) bool {
+    visited := make(map[string]string)
+    isParent := make(map[string]bool)
+    return recurs(pattern, 0, s, 0, visited, isParent)
+}
+
+
+func recurs(pattern string, k int, s string, i int, visited map[string]string, isParent map[string]bool)bool {
+    if k==len(pattern) {
+        if i==len(s) {
+            return true
+        }
+        return false
+    } 
+    res := false
+    for j:=i; j<len(s);j++ {
+        temp := s[i:j+1]
+        _, ok :=visited[string(pattern[k])]
+        if !ok {
+            if !isParent[temp] {
+                visited[string(pattern[k])] = temp
+                isParent[temp] = true
+                if recurs(pattern, k+1, s, j+1, visited,isParent) {
+                    return true
+                }
+                delete(visited, string(pattern[k])) 
+                isParent[temp] = false
+            }
+        } else if ok && visited[string(pattern[k])] == temp {
+            res = res || recurs(pattern, k+1, s, j+1, visited,isParent)
+        }
+    }
+    return res
+
+}
