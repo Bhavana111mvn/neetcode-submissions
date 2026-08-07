@@ -1,0 +1,23 @@
+https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/?utm_source=chatgpt.com
+Given an integer array nums and an integer k, return the maximum length of a subarray that sums to k. If there is not one, return 0 instead.
+
+ 
+func maxSubArrayLen(nums []int, k int) int {
+    sumindmap := make(map[int]int)
+    sumindmap[0] = -1
+    prefixsum := 0
+    maxi := 0
+    for ind, num := range nums {
+        prefixsum +=num
+        _, ok := sumindmap[prefixsum-k]
+        if ok {
+            maxi = max(maxi, ind-sumindmap[prefixsum-k])
+        }
+        _, ok = sumindmap[prefixsum]
+        if !ok {
+            sumindmap[prefixsum]=ind
+        }
+    }
+    return maxi
+    
+}
